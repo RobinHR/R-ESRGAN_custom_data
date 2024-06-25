@@ -15,23 +15,29 @@ Before we dive into the steps, make sure you have the following:
 # Step by step guide
 Step 1: Clone the Repository
 First, clone the Real-ESRGAN repository from GitHub:
+```
 git clone https://github.com/xinntao/Real-ESRGAN.git
+```
 
 Step 2: Navigate to the Directory
 Change your directory to the cloned repository:
+```
 cd Real-ESRGAN
+```
 
 Step 3: Install Required Packages
 Install the necessary packages by running:
+```
 pip install -r requirements.txt
 pip install --user torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
 python setup.py develop
+```
 
 Step 4: Prepare Your Data
-Collect your data. For instance, I used a script to save episodes of Star Trek TNG as JPG files. Below is an example script to extract frames from a video and save them as images:
+Collect your data. For instance, I used a script to save episodes of a Star Trek Episode as JPG files. Below is the script I used to extract frames from a video and save them as images. You can create a new script in the directory of Real-ESRGAN named extract_images:
+```
 import cv2
 import os
-
 def video_to_frames(video_path, output_path):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -60,7 +66,7 @@ if __name__ == "__main__":
     output_directory = os.path.dirname(video_file)
     os.makedirs(output_directory, exist_ok=True)
     video_to_frames(video_file, output_directory)
-
+```
 Ensure your images are named image0.jpg, image1.jpg, etc.
 
 Step 5: Create Folders for Your Dataset
@@ -72,19 +78,26 @@ Create new directories for your dataset within the project:
 
 Step 6: Generate Lower Resolution Images (Multiscale)
 Use the following command to create lower resolution versions of your images:
+```
 python scripts/generate_multiscale_DF2K.py --input datasets/own_dataset_root/own_images --output datasets/own_dataset_root/own_images_multiscale
+```
 
 Step 7: Create Meta Information Text File
 Run the following command to generate a text file containing a list of image file paths:
+```
 python scripts/generate_meta_info.py --input datasets/own_dataset_root/own_images datasets/own_dataset_root/own_images_multiscale --root datasets/own_dataset_root datasets/own_dataset_root --meta_info datasets/own_dataset_root/meta_info/meta_info_own_imagesmultiscale.txt
+```
 
 Step 8: Download Pre-trained Models
 Download the pre-trained models using these commands:
+```
 wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth -P experiments/pretrained_models
 wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.3/RealESRGAN_x4plus_netD.pth -P experiments/pretrained_models
+```
 
 Step 9: Update Configuration File
 Edit the finetune_realesrgan_x4plus.yml file located in the Options folder. Update the datasets section with your dataset paths:
+```
 datasets:
   train:
     name: own_dataset
@@ -93,18 +106,30 @@ datasets:
     meta_info: datasets/own_dataset_root/meta_info/meta_info_own_imagesmultiscale.txt
     io_backend:
       type: disk
+```
 
 Step 10: Update Pre-trained Model Path
-In the same finetune_realesrgan_x4plus.yml file, update the path section from 'pretrain_network_g' to RealESRGAN_x4plus.pth, the end result should look like this:
+In the same finetune_realesrgan_x4plus.yml file, update the path section from 'pretrain_network_g' to RealESRGAN_x4plus.pth. 
+First you should have this:
+```
 path:
+  # use the pre-trained Real-ESRNet model
+  pretrain_network_g: experiments/pretrained_models/RealESRNet_x4plus.pth
+```
+You have to change that to this:
+```
+path:
+# use the pre-trained Real-ESRNet model
   RealESRGAN_x4plus.pth: experiments/pretrained_models/RealESRNet_x4plus.pth
+```
 
 Step 11: Train the Model
 Run the training script with the following command:
+```
 python realesrgan/train.py -opt options/finetune_realesrgan_x4plus.yml --auto_resume
+```
 
 Your model will now begin training! The duration of this process depends on the number of images in your dataset.
-
 And there you have it! Follow these steps to successfully train Real-ESRGAN with your custom dataset. Happy enhancing!
 
 
