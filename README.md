@@ -130,6 +130,18 @@ python realesrgan/train.py -opt options/finetune_realesrgan_x4plus.yml --auto_re
 ```
 
 Your model will now begin training! The duration of this process depends on the number of images in your dataset.
+
+Should you have any issues when you train to train the training script like 'The paging file is too small' or 'cuDNN error: CUDNN_STATUS_INTERNAL_ERROR' you should try lower the num_worker
+This should also be in the finetune_realesrgan_x4plus.yml file. Try changing it to this:
+```
+    # data loader
+    use_shuffle: true
+    num_worker_per_gpu: 1
+    batch_size_per_gpu: 4
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+```
+
 And there you have it! Follow these steps to successfully train Real-ESRGAN with your custom dataset. Happy enhancing!
 
 
