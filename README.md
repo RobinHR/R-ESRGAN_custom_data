@@ -141,6 +141,17 @@ This should also be in the finetune_realesrgan_x4plus.yml file. Try changing it 
     dataset_enlarge_ratio: 1
     prefetch_mode: ~
 ```
+You could also get this issue:
+ModuleNotFoundError: No module named 'torchvision.transforms.functional_tensor' torchvision
+
+Navigate to degradations.py and change:
+```
+from torchvision.transforms.functional_tensor import rgb_to_grayscale 
+```
+to the following:
+```
+from torchvision.transforms.functional import rgb_to_grayscale 
+```
 
 And there you have it! Follow these steps to successfully train Real-ESRGAN with your custom dataset. Happy enhancing!
 
